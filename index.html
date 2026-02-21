@@ -1,0 +1,865 @@
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Отчёт собственнику: эффект возврата авансов и экономия НДС</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-dark: #050816;
+      --bg-card: #0f172a;
+      --bg-card-soft: #111827;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.2);
+      --accent-red: #ef4444;
+      --accent-red-soft: rgba(239, 68, 68, 0.12);
+      --accent-yellow: #facc15;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --border-soft: rgba(148, 163, 184, 0.4);
+      --shadow-strong: 0 24px 60px rgba(15,23,42,0.85);
+      --shadow-soft: 0 18px 40px rgba(15,23,42,0.6);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 12px 40px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(59,130,246,0.25), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(236,72,153,0.25), transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(34,197,94,0.16), transparent 55%),
+        var(--bg-dark);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: minmax(0, 2.4fr) minmax(0, 1.6fr);
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 900px) {
+      .header {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .title-block {
+      background: linear-gradient(135deg, rgba(15,23,42,0.96), rgba(15,23,42,0.85));
+      border-radius: var(--radius-xl);
+      padding: 22px 26px 24px;
+      box-shadow: var(--shadow-strong);
+      border: 1px solid rgba(148,163,184,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .title-block::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 0 0, rgba(34,197,94,0.16), transparent 65%),
+        radial-gradient(circle at 100% 0, rgba(59,130,246,0.16), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .title-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--text-soft);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(34,197,94,0.3);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-soft);
+      max-width: 90%;
+    }
+
+    .tagline {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(55,65,81,0.8);
+    }
+
+    .meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(156,163,175,0.85);
+    }
+
+    .hero-number-card {
+      background: radial-gradient(circle at 0 0, rgba(34,197,94,0.24), transparent 60%),
+                  radial-gradient(circle at 100% 100%, rgba(234,179,8,0.14), transparent 60%),
+                  var(--bg-card-soft);
+      border-radius: var(--radius-xl);
+      padding: 18px 18px 20px;
+      border: 1px solid rgba(55,65,81,0.9);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(209,213,219,0.9);
+      margin-bottom: 10px;
+    }
+
+    .hero-number {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+    }
+
+    .hero-caption {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-bottom: 12px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      background: rgba(15,23,42,0.9);
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 11px;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .hero-badge span {
+      font-size: 13px;
+    }
+
+    .impact-bar {
+      margin-top: 6px;
+    }
+
+    .impact-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .impact-bar-track {
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      border: 1px solid rgba(55,65,81,0.95);
+    }
+
+    .impact-bar-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a3e635);
+      box-shadow: 0 0 14px rgba(34,197,94,0.75);
+    }
+
+    .hero-footnote {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.3fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    section {
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: rgba(15,23,42,0.96);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(55,65,81,0.95);
+      padding: 16px 18px 18px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title span.icon {
+      font-size: 18px;
+    }
+
+    .card-subtitle {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .badge-red {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      background: rgba(127,29,29,0.8);
+      color: #fecaca;
+      border: 1px solid rgba(248,113,113,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-green {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      background: rgba(21,128,61,0.85);
+      color: #bbf7d0;
+      border: 1px solid rgba(74,222,128,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-neutral {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      background: rgba(31,41,55,0.95);
+      color: #e5e7eb;
+      border: 1px solid rgba(75,85,99,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 720px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .kpi {
+      background: radial-gradient(circle at 0 0, rgba(34,197,94,0.12), transparent 60%),
+                  rgba(15,23,42,0.9);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(55,65,81,0.95);
+      padding: 10px 10px 10px;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .kpi-value {
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .kpi-tag {
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--accent);
+    }
+
+    .kpi-note {
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 840px) {
+      .scenario-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .scenario {
+      border-radius: var(--radius-md);
+      padding: 10px 11px 11px;
+      border: 1px solid rgba(55,65,81,0.9);
+      position: relative;
+    }
+
+    .scenario.bad {
+      background: radial-gradient(circle at 0 0, rgba(239,68,68,0.3), transparent 55%),
+                  rgba(15,23,42,0.96);
+      box-shadow: 0 18px 40px rgba(127,29,29,0.7);
+    }
+
+    .scenario.good {
+      background: radial-gradient(circle at 0 0, rgba(34,197,94,0.28), transparent 55%),
+                  rgba(15,23,42,0.96);
+      box-shadow: 0 18px 40px rgba(21,128,61,0.7);
+    }
+
+    .scenario-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scenario-title span.icon {
+      font-size: 17px;
+    }
+
+    .scenario ul {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 11px;
+      color: var(--text-main);
+    }
+
+    .scenario ul li {
+      margin-bottom: 3px;
+    }
+
+    .scenario-footnote {
+      margin-top: 6px;
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .flags {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-top: 6px;
+    }
+
+    .flag-item {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: 8px;
+      align-items: flex-start;
+      padding: 7px 9px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(75,85,99,0.9);
+    }
+
+    .flag-dot.red {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(248,113,113,0.9);
+      background: radial-gradient(circle at 40% 30%, #fecaca, #b91c1c);
+      box-shadow: 0 0 12px rgba(248,113,113,0.9);
+      margin-top: 2px;
+    }
+
+    .flag-dot.green {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(74,222,128,0.9);
+      background: radial-gradient(circle at 40% 30%, #bbf7d0, #15803d);
+      box-shadow: 0 0 12px rgba(34,197,94,0.9);
+      margin-top: 2px;
+    }
+
+    .flag-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .flag-text {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 12px;
+      color: var(--text-main);
+    }
+
+    .list li {
+      margin-bottom: 3px;
+    }
+
+    .accent {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .accent-red {
+      color: #fecaca;
+      font-weight: 500;
+    }
+
+    .quote {
+      margin-top: 10px;
+      padding: 8px 9px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(75,85,99,0.9);
+      background: rgba(15,23,42,0.96);
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .quote strong {
+      color: var(--accent);
+    }
+
+    .legal-block {
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      background: rgba(15,23,42,0.98);
+      border: 1px solid rgba(55,65,81,0.95);
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .legal-block ul {
+      margin: 4px 0 0;
+      padding-left: 16px;
+    }
+
+    .legal-block li {
+      margin-bottom: 4px;
+    }
+
+    .footer {
+      margin-top: 18px;
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .footer strong {
+      color: var(--text-main);
+    }
+
+    .stamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: rgba(15,23,42,0.95);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+    }
+
+    .stamp-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(34,197,94,0.8);
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="title-block">
+      <div class="title-inner">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          ОТЧЁТ ДЛЯ СОБСТВЕННИКА · ФИНАНСЫ ПРОЕКТА
+        </div>
+        <h1>Возврат авансов генподрядчика и экономия НДС<br>как инструмент сохранения проекта</h1>
+        <p class="subtitle">
+          Пояснительная записка по операциям возврата авансов в адрес заказчиков
+          и переходу к финансированию через договор займа. Цель — показать
+          экономический эффект, отсутствие нарушений и реальную защиту проекта.
+        </p>
+        <p class="tagline">
+          Решение, которое сохранило проекту <strong>60,4 млн ₽</strong> и предотвратило кассовый кризис.
+        </p>
+        <div class="meta">
+          <span><span class="meta-label">Период</span>2025 год</span>
+          <span><span class="meta-label">Участники</span>СЗ «Веголос», СЗ «Веголос Восточный», ООО «Веголос Инженеринг»</span>
+          <span><span class="meta-label">Фокус</span>возвраты авансов, НДС, ликвидность генподрядчика</span>
+        </div>
+      </div>
+    </div>
+
+    <aside class="hero-number-card">
+      <div class="hero-label">Ключевой финансовый результат</div>
+      <div class="hero-number">60 402 833,33 ₽</div>
+      <div class="hero-caption">НДС с авансов, который <span class="accent">не был уплачен</span> и остался в проекте.</div>
+
+      <div class="hero-badge">
+        <span>⚡</span>
+        <span>Решение спасло проект от кассового обрыва и остановки стройки.</span>
+      </div>
+
+      <div class="impact-bar">
+        <div class="impact-bar-label">
+          <span>Эффект на устойчивость проекта</span>
+          <span>Высокий риск при альтернативном сценарии</span>
+        </div>
+        <div class="impact-bar-track">
+          <div class="impact-bar-fill"></div>
+        </div>
+      </div>
+
+      <div class="hero-footnote">
+        Всего по листу «Возвраты» ДДС: <strong>362 417 000 ₽</strong> возвратов авансов от генподрядчика к заказчикам.
+      </div>
+    </aside>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- LEFT COLUMN -->
+    <section>
+      <!-- Блок 1: цифры -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span class="icon">📊</span>
+              Финансовый эффект операций
+            </div>
+            <div class="card-subtitle">
+              Конкретные суммы по данным листа «Возвраты» файла ДДС 2025_1.xlsx.
+            </div>
+          </div>
+          <div class="badge-green">
+            ✅ Подтверждено данными ДДС
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Суммарный возврат авансов от генподрядчика</div>
+            <div class="kpi-value">362 417 000 ₽</div>
+            <div class="kpi-tag">в адрес СЗ «Веголос» и СЗ «Веголос Восточный»</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-label">Потенциальный НДС с этих авансов</div>
+            <div class="kpi-value accent">60 402 833,33 ₽</div>
+            <div class="kpi-tag">налоговое обязательство, которого удалось избежать</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-label">Фактический результат для проекта</div>
+            <div class="kpi-value">+60,4 млн ₽</div>
+            <div class="kpi-note">сохранённый оборотный капитал генподрядчика, который работает на стройку</div>
+          </div>
+        </div>
+
+        <div class="quote">
+          <strong>Вывод:</strong> возврат авансов и переход к займу — это не «серые» операции,
+          а осознанное управленческое решение, которое защитило проект от потери 60,4 млн руб.
+          и позволило продолжать строительство без кассового шока.
+        </div>
+      </div>
+
+      <!-- Блок 2: сценарии -->
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span class="icon">⚖️</span>
+              Сравнение сценариев: «заплатить НДС» vs «вернуть авансы»
+            </div>
+            <div class="card-subtitle">
+              Как выглядел бы проект, если бы авансы не были возвращены.
+            </div>
+          </div>
+        </div>
+
+        <div class="scenario-grid">
+          <div class="scenario bad">
+            <div class="scenario-title">
+              <span class="icon">🚩</span>
+              Если бы авансы остались и НДС был уплачен
+            </div>
+            <ul>
+              <li>Генподрядчик платит НДС ≈ <span class="accent-red">60,4 млн ₽</span>.</li>
+              <li>Изъятие средств не создаёт стройготовность и не увеличивает лимит выборки по кредиту.</li>
+              <li>Дефицит оборотки: нечем финансировать материалы, работы, зарплаты.</li>
+              <li>Риск срыва графика СМР и остановки стройки.</li>
+              <li>Высокая вероятность проблем с уплатой НДС → блокировка расчётного счёта.</li>
+              <li>Для банка: фактическое ухудшение проекта и усиление мониторинга.</li>
+            </ul>
+            <div class="scenario-footnote">
+              Такой сценарий действительно выглядел бы как «некомпетентное управление».
+            </div>
+          </div>
+
+          <div class="scenario good">
+            <div class="scenario-title">
+              <span class="icon">✅</span>
+              Реализованный сценарий: возврат авансов + заем
+            </div>
+            <ul>
+              <li>Генподрядчик возвращает авансы заказчикам на сумму <strong>362,4 млн ₽</strong>.</li>
+              <li>НДС с авансов <span class="accent">не возникает</span> — экономия <strong>60,4 млн ₽</strong>.</li>
+              <li>Финансирование генподрядчика переводится в формат возвратного займа.</li>
+              <li>Оборотные средства сохраняются в контуре проектов, стройка продолжается.</li>
+              <li>Стройготовность растёт, выборка кредитных средств поддерживается.</li>
+              <li>У банка нет формальных оснований для претензий: договор не нарушен.</li>
+            </ul>
+            <div class="scenario-footnote">
+              Фактически это антикризисное управленческое решение, а не «сомнительная операция».
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN -->
+    <section>
+      <!-- Блок 3: красные флаги и их снятие -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span class="icon">🚨</span>
+              Красные флаги банка и фактическая картина
+            </div>
+            <div class="card-subtitle">
+              Почему операция вызвала тревогу у банка и что важно понимать собственнику.
+            </div>
+          </div>
+          <div class="badge-red">
+            Внешне — тревожный кейс
+          </div>
+        </div>
+
+        <div class="flags">
+          <div class="flag-item">
+            <div class="flag-dot red"></div>
+            <div>
+              <div class="flag-title">Как это выглядит для банка</div>
+              <div class="flag-text">
+                Банк видит нетипичные крупные возвраты от генподрядчика и новую схему расчётов.
+                Для служб мониторинга это автоматически повышенный риск: <span class="accent-red">«что-то
+                происходит с деньгами проекта»</span>, значит будут вопросы от вышестоящих подразделений.
+              </div>
+            </div>
+          </div>
+
+          <div class="flag-item">
+            <div class="flag-dot green"></div>
+            <div>
+              <div class="flag-title">Что происходит в реальности</div>
+              <div class="flag-text">
+                Деньги не уходят из периметра «Веголос», а
+                <span class="accent">меняют форму</span> —
+                с авансов (которые создают НДС и риски) на возвратный займ,
+                который обеспечивает стройку без избыточной налоговой нагрузки.
+              </div>
+            </div>
+          </div>
+
+          <div class="flag-item">
+            <div class="flag-dot green"></div>
+            <div>
+              <div class="flag-title">Почему банку это «не нравится», но нарушений нет</div>
+              <div class="flag-text">
+                С точки зрения закона и кредитного договора:
+                <br>— возврат авансов не запрещён;<br>
+                — выдача займа за счёт собственных средств допустима;<br>
+                — целевое использование кредитных средств не нарушено;
+                <br>— финансовые показатели проекта не ухудшены.
+                <br><br>
+                Реальная причина раздражения банка —
+                <span class="accent">страх дополнительных проверок и внутренних вопросов</span>,
+                а не наличие нарушений.
+              </div>
+            </div>
+          </div>
+
+          <div class="flag-item">
+            <div class="flag-dot green"></div>
+            <div>
+              <div class="flag-title">Позиция для диалога с банком</div>
+              <div class="flag-text">
+                <ul class="list">
+                  <li>Операции проведены в рамках законодательства и действующего кредитного договора.</li>
+                  <li>Фактический результат — защита стройки и стабильность обслуживания долга.</li>
+                  <li>Мы готовы прозрачно показать расчёты и подтвердить, что возвраты авансов
+                    <span class="accent">улучшают</span> риск-профиль проекта, а не ухудшают его.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote">
+          Для банка эта история — «лишняя работа» по объяснению вышестоящим службам.
+          Для проекта — это <strong>экономия 60,4 млн ₽ и сохранённая стройка</strong>.
+        </div>
+      </div>
+
+      <!-- Блок 4: юридическая чистота и вывод -->
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span class="icon">⚖️</span>
+              Юридическая сторона и управленческий вывод
+            </div>
+            <div class="card-subtitle">
+              Почему принятое решение профессионально и защитимо.
+            </div>
+          </div>
+          <div class="badge-neutral">
+            💼 Комплаенс выдержан
+          </div>
+        </div>
+
+        <div class="legal-block">
+          <strong>Кратко о юридической чистоте:</strong>
+          <ul>
+            <li>Возврат авансов по договорам генподряда законом не запрещён.</li>
+            <li>Договор займа между заказчиком и генподрядчиком за счёт собственных средств — допустим.</li>
+            <li>Ни один пункт кредитного договора с банком не нарушен.</li>
+            <li>Целевое использование кредитных средств и средств дольщиков не изменилось.</li>
+            <li>Все операции отражены в ДДС и могут быть прозрачно предъявлены банку и аудиторам.</li>
+          </ul>
+        </div>
+
+        <div class="quote">
+          <strong>Управленческий вывод для собственника:</strong><br>
+          отказ от возврата авансов и уплата НДС в размере 60,4 млн ₽ означали бы
+          сознательное согласие на кассовый кризис и остановку стройки.
+          Принятое решение — это не уход от обязательств, а профессиональная защита проекта
+          в рамках закона и условий финансирования.
+        </div>
+
+        <div class="footer">
+          <div class="stamp">
+            <span class="stamp-dot"></span>
+            <span>Операции признаны обоснованными с финансовой точки зрения</span>
+          </div>
+          <div style="margin-top: 6px;">
+            Отчёт подготовлен для внутреннего использования собственником группы «Веголос».
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>
